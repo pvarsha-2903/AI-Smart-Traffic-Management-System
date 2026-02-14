@@ -37,6 +37,13 @@ to dynamically adjust traffic lights based on traffic density.
 - OpenCV (future)
 - Flask (future)
 
+## 📄 Smart India Hackathon Submission
+
+This project was originally proposed during Smart India Hackathon 2025.
+
+[View SIH Presentation](./PRAVAH-SIH-Presentation.pdf)
+  
+
 ## Project Status
 Phase 1: Documentation and Simulation
 
