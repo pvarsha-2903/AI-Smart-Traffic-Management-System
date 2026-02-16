@@ -53,5 +53,5 @@ Phase 1: Documentation and Simulation
 This project was originally developed as part of Smart India Hackathon 2025 by Team Civaura.
 
 ## Maintained and Extended by
-Varsha Penumudi
+Varsha Penumudi and Aarya Bhandari
 
