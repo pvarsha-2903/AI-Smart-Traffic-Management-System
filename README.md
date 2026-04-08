@@ -26,10 +26,23 @@ This system uses:
 to dynamically adjust traffic lights based on traffic density.
 
 ## Features
-- Traffic simulation
-- AI-based vehicle detection (future)
-- Adaptive signal timing
-- Emergency vehicle priority (future)
+- Fairness-based traffic control (prevents starvation of lanes)
+- Dynamic signal switching using vehicle count and wait time
+- Real-time traffic simulation
+- Visual traffic representation using symbols/emojis
+- AI-based vehicle detection (planned)
+
+## ⚙️ How It Works
+1. Each lane has vehicle count and wait time
+2. A fairness formula is applied:
+   Priority = Vehicles + (Wait Time × 0.7)
+3. The lane with the highest priority gets the green signal
+4. Other lanes wait, increasing their priority over time
+5. This ensures no lane is ignored (prevents starvation)
+
+## 📊 Simulation Output
+
+(Screenshot will be added soon)
 
 ## Tech Stack
 - Python
