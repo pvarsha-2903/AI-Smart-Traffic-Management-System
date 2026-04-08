@@ -1,21 +1,45 @@
-# Smart Traffic Simulation
+import time
 
-lane1 = 50
-lane2 = 20
-lane3 = 80
-lane4 = 10
-
+# Initial traffic data
 lanes = {
-    "Lane 1": lane1,
-    "Lane 2": lane2,
-    "Lane 3": lane3,
-    "Lane 4": lane4
+    "North": {"vehicles": 50, "wait_time": 30},
+    "South": {"vehicles": 20, "wait_time": 80},
+    "East": {"vehicles": 70, "wait_time": 20},
+    "West": {"vehicles": 10, "wait_time": 100}
 }
 
-max_lane = max(lanes, key=lanes.get)
+# Function to calculate priority using fairness logic
+def calculate_priority(lanes):
+    return max(
+        lanes,
+        key=lambda lane: lanes[lane]["vehicles"] + (lanes[lane]["wait_time"] * 0.7)
+    )
 
-print("Traffic Data:")
-for lane, cars in lanes.items():
-    print(lane, ":", cars, "vehicles")
+# Function to display traffic visually
+def display_traffic(lanes):
+    print("\n=== 🚗 Traffic Status ===")
+    for lane, data in lanes.items():
+        bar = "█" * (data["vehicles"] // 5)
+        print(f"{lane}: {bar} ({data['vehicles']} cars, wait {data['wait_time']}s)")
 
-print("\nPriority Green Signal:", max_lane)
+print("=== 🚦 Traffic Signal Simulation Started ===")
+
+# Run simulation for multiple cycles
+for cycle in range(5):
+    display_traffic(lanes)
+
+    priority_lane = calculate_priority(lanes)
+
+    print(f"\n🚦 GREEN SIGNAL: {priority_lane}")
+    print("🔴 RED SIGNAL: Other lanes")
+
+    # Simulate signal duration
+    time.sleep(2)
+
+    # Update traffic conditions
+    for lane in lanes:
+        if lane == priority_lane:
+            lanes[lane]["wait_time"] = 0
+            lanes[lane]["vehicles"] = max(0, lanes[lane]["vehicles"] - 10)
+        else:
+            lanes[lane]["wait_time"] += 10
