@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Traffic Control</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI';
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: white;
+        }
+
+        .header {
+            background: rgba(30,58,138,0.8);
+            padding: 15px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px;
+        }
+
+        .stat {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            width: 180px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .main {
+            display: flex;
+        }
+
+        .left {
+            width: 70%;
+            padding: 20px;
+        }
+
+        .right {
+            width: 30%;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+        }
+
+        .map {
+            background: #111;
+            height: 250px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+        }
+
+        .road {
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            margin: 10px;
+            border-radius: 10px;
+        }
+
+        .alert {
+            background: red;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+        }
+
+        .corridor {
+            background: green;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background: #2563eb;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">🚦 Smart Traffic Control Dashboard</div>
+
+<div class="stats" id="stats"></div>
+
+<div id="alerts"></div>
+
+<div class="main">
+
+    <!-- LEFT -->
+    <div class="left">
+
+        <!-- 🗺️ MAP -->
+        <div class="map" id="map"></div>
+
+        <!-- 📊 CHART -->
+        <canvas id="chart"></canvas>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right">
+
+        <h3>🎥 CCTV Feed (Demo)</h3>
+        <img src="https://images.unsplash.com/photo-1502877338535-766e1452684a" width="100%" style="border-radius:10px;">
+
+        <h3>🎛️ Controls</h3>
+        <button>🚦 Change Signal</button>
+        <button>🟢 Green Corridor</button>
+        <button>🚨 Emergency</button>
+
+    </div>
+
+</div>
+
+<script>
+let chart;
+
+async function loadData() {
+    const res = await fetch("http://localhost:5000/traffic");
+    const data = await res.json();
+
+    let stats = "";
+    let alerts = "";
+    let map = "";
+
+    let vehiclesArr = [];
+    let lanes = [];
+
+    let total = 0;
+
+    if (data.emergency) {
+        alerts += `<div class="alert">${data.emergency}</div>`;
+    }
+
+    if (data.greenCorridor === "ACTIVE") {
+        alerts += `<div class="corridor">🟢 Green Corridor Active</div>`;
+    }
+
+    data.traffic.forEach(d => {
+        total += d.vehicles;
+        vehiclesArr.push(d.vehicles);
+        lanes.push(d.lane);
+
+        map += `<div class="road">🚗</div>`;
+    });
+
+    stats = `
+        <div class="stat">🚗 Total<br>${total}</div>
+        <div class="stat">🚦 Lanes<br>${data.traffic.length}</div>
+        <div class="stat">🚨 Emergency<br>${data.emergency ? 1 : 0}</div>
+    `;
+
+    document.getElementById("stats").innerHTML = stats;
+    document.getElementById("alerts").innerHTML = alerts;
+    document.getElementById("map").innerHTML = map;
+
+    // CHART
+    if (chart) chart.destroy();
+
+    const ctx = document.getElementById("chart");
+
+    chart = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: lanes,
+            datasets: [{
+                label: "Vehicles",
+                data: vehiclesArr
+            }]
+        }
+    });
+}
+
+setInterval(loadData, 2000);
+loadData();
+</script>
+
+</body>
+</html>
